@@ -1,0 +1,16 @@
+{
+  "manifest_id": "fishing-boat",
+  "name": "F/V Northern Star",
+  "rooms": [
+    {"room_id": "engine_room", "config": "configs/fishing-boat/engine-room.room.json"},
+    {"room_id": "backdeck", "config": "configs/fishing-boat/backdeck.room.json"},
+    {"room_id": "wheelhouse", "config": "configs/fishing-boat/wheelhouse.room.json"},
+    {"room_id": "crows_nest", "config": "configs/fishing-boat/crows-nest.room.json"},
+    {"room_id": "galley", "config": "configs/fishing-boat/galley.room.json"},
+    {"room_id": "bilge", "config": "configs/fishing-boat/bilge.room.json"}
+  ],
+  "agents": [
+    {"agent_id": "watchdog", "rooms": ["*"], "rules": "escalate any alarm unacknowledged for 60s"},
+    {"agent_id": "engine_monitor", "rooms": ["engine_room", "bilge"], "rules": "cross-reference coolant temp with bilge levels for leak detection"}
+  ]
+}

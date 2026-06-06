@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://plato.dev/schemas/alarm.schema.json",
+  "title": "Plato Alarm Rule",
+  "description": "Schema for an alarm rule within a room configuration. Alarms define conditions that trigger automated responses.",
+  "type": "object",
+  "required": ["id", "condition", "cooldown_sec", "severity", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this alarm rule within the room. Must be snake_case.",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "examples": ["overheat", "high_pressure", "low_battery"]
+    },
+    "condition": {
+      "type": "string",
+      "description": "Boolean expression that triggers the alarm when true.\n\nSyntax:\n- Reference sensor keys by their property name\n- Comparison operators: >, <, >=, <=, ==, !=\n- Logical operators: and, or\n- Examples:\n  - coolant_temp_c > 95\n  - pressure_psi < 15\n  - temp_c > 40 and humidity_pct > 80\n  - level_a > 70 or level_b > 70",
+      "minLength": 1,
+      "examples": [
+        "coolant_temp_c > 95",
+        "oil_pressure_psi < 15",
+        "co_ppm > 50",
+        "water_level_aft_cm > 70 or water_level_fwd_cm > 70"
+      ]
+    },
+    "cooldown_sec": {
+      "type": "integer",
+      "description": "Minimum number of seconds between consecutive triggers of this alarm.\n\n- 0: triggers every tick when condition is true\n- 5-30: typical for safety-critical alarms\n- 300-3600: typical for informational/warning alarms",
+      "minimum": 0,
+      "examples": [0, 5, 10, 30, 60, 300, 3600]
+    },
+    "severity": {
+      "type": "string",
+      "description": "Severity level determines the response behavior.\n\n- info: Log only, no notification. Used for status tracking.\n- warning: Notify relevant personnel. Investigate when convenient.\n- critical: Immediate notification, automatic mitigation actions.",
+      "enum": ["info", "warning", "critical"]
+    },
+    "actions": {
+      "type": "array",
+      "description": "List of actions to execute when the alarm triggers.\n\nActions are strings that map to handlers in the Plato engine.\nCommon actions include:\n- log: Record the alarm event\n- notify_*: Send notification to a role\n- sound_alarm: Activate audible alarm\n- activate_*: Enable an actuator\n- shut_off_*: Disable an actuator\n- *_door, *_pump, *_valve: Physical actions",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "examples": [
+        ["log"],
+        ["notify_ops", "log"],
+        ["notify_captain", "sound_alarm", "log"],
+        ["notify_supervisor", "emergency_stop", "log"]
+      ]
+    }
+  }
+}

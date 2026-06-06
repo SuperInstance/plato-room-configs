@@ -1,0 +1,89 @@
+{
+  "room_id": "production_line",
+  "name": "Production Line A",
+  "tick_hz": 2.0,
+  "history_capacity": 5000,
+  "sensors": {
+    "line_speed_units_per_min": {
+      "type": "float",
+      "unit": "units/min",
+      "source": "modbus:register/40001",
+      "range": [0, 120],
+      "alarm_range": null
+    },
+    "defect_rate_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "modbus:register/40002",
+      "range": [0, 100],
+      "alarm_range": [5, 100]
+    },
+    "conveyor_motor_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "modbus:register/40003",
+      "range": [0, 120],
+      "alarm_range": [90, 120]
+    },
+    "vibration_mm_s": {
+      "type": "float",
+      "unit": "mm/s",
+      "source": "modbus:register/40004",
+      "range": [0, 50],
+      "alarm_range": [20, 50]
+    },
+    "units_produced": {
+      "type": "integer",
+      "unit": "units",
+      "source": "modbus:register/40005",
+      "range": [0, 100000],
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "line_start": {
+      "type": "boolean",
+      "target": "modbus:coil/1",
+      "safe_default": false
+    },
+    "emergency_stop": {
+      "type": "boolean",
+      "target": "modbus:coil/2",
+      "safe_default": true
+    },
+    "speed_adjust": {
+      "type": "float",
+      "target": "modbus:register/40010",
+      "range": [0, 1],
+      "safe_default": 0.0
+    }
+  },
+  "alarms": [
+    {
+      "id": "high_defects",
+      "condition": "defect_rate_pct > 5",
+      "cooldown_sec": 60,
+      "severity": "warning",
+      "actions": ["notify_supervisor", "log"]
+    },
+    {
+      "id": "motor_overheat",
+      "condition": "conveyor_motor_temp_c > 90",
+      "cooldown_sec": 15,
+      "severity": "critical",
+      "actions": ["notify_supervisor", "emergency_stop", "log"]
+    },
+    {
+      "id": "excessive_vibration",
+      "condition": "vibration_mm_s > 20",
+      "cooldown_sec": 30,
+      "severity": "warning",
+      "actions": ["notify_supervisor", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "building_A_floor_1",
+    "hardware": "siemens-s7-1500",
+    "deployment": "factory"
+  }
+}

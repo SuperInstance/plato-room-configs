@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://plato.dev/schemas/sensor.schema.json",
+  "title": "Plato Sensor Specification",
+  "description": "Detailed schema for a single sensor definition within a room configuration.",
+  "type": "object",
+  "required": ["type", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Data type of the sensor reading.",
+      "enum": ["float", "integer", "boolean", "string"],
+      "examples": ["float", "integer", "boolean"]
+    },
+    "unit": {
+      "description": "Physical unit of measurement. Use null for dimensionless or boolean sensors.",
+      "oneOf": [{"type": "string"}, {"type": "null"}],
+      "examples": ["°C", "psi", "kts", "ppm", "%", "rpm", "m", "kg", "kW", null]
+    },
+    "source": {
+      "type": "string",
+      "description": "Data source URI in format 'protocol:path'.\n\nSupported protocols:\n- mqtt: MQTT topic path\n- gpio: GPIO pin number\n- pwm: PWM channel\n- adc: ADC channel\n- i2c: I2C device address\n- spi: SPI device\n- modbus: Modbus register\n- bacnet: BACnet object\n- snmp: SNMP OID\n- ipmi: IPMI sensor\n- zigbee: Zigbee device\n- game: Game engine entity/state",
+      "pattern": "^[a-z][a-z0-9]*:.+",
+      "examples": [
+        "mqtt:esp32/engine/coolant",
+        "gpio:17",
+        "modbus:register/40001",
+        "bacnet:analog-input/1",
+        "snmp:ifSpeed.1",
+        "zigbee:sensor/living-temp"
+      ]
+    },
+    "range": {
+      "description": "Valid operating range as [min, max]. null for unbounded sensors (e.g., boolean).",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {"type": "number"},
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {"type": "null"}
+      ]
+    },
+    "alarm_range": {
+      "description": "Range that indicates an alarming condition as [min, max]. The alarm triggers when the sensor value falls within this range. null if no alarm threshold for this sensor (alarm conditions are defined separately in the alarms array).",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {"type": "number"},
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {"type": "null"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "manifest_id": "factory",
+  "name": "Acme Manufacturing Plant",
+  "rooms": [
+    {"room_id": "production_line", "config": "configs/factory/production-line.room.json"},
+    {"room_id": "warehouse", "config": "configs/factory/warehouse.room.json"},
+    {"room_id": "hvac", "config": "configs/factory/hvac.room.json"}
+  ],
+  "agents": [
+    {"agent_id": "plant_controller", "rooms": ["*"], "rules": "optimize production throughput while maintaining safety constraints; auto-shutdown on critical alarms"},
+    {"agent_id": "energy_manager", "rooms": ["hvac", "production_line"], "rules": "minimize energy costs during off-peak; coordinate chiller scheduling with production demand"}
+  ]
+}

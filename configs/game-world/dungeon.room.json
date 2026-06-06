@@ -1,0 +1,81 @@
+{
+  "room_id": "dungeon",
+  "name": "The Crypt of Shadows",
+  "tick_hz": 2.0,
+  "history_capacity": 2000,
+  "sensors": {
+    "player_count": {
+      "type": "integer",
+      "unit": "players",
+      "source": "game:entity-count/tag:player",
+      "range": [0, 8],
+      "alarm_range": null
+    },
+    "trap_armed": {
+      "type": "boolean",
+      "unit": null,
+      "source": "game:state/trap-armed",
+      "range": null,
+      "alarm_range": null
+    },
+    "monster_hp": {
+      "type": "integer",
+      "unit": "hp",
+      "source": "game:stat/boss-hp",
+      "range": [0, 5000],
+      "alarm_range": [0, 500]
+    },
+    "torch_light_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "game:stat/torch-light",
+      "range": [0, 100],
+      "alarm_range": [0, 15]
+    },
+    "loot_spawned": {
+      "type": "boolean",
+      "unit": null,
+      "source": "game:state/loot-spawned",
+      "range": null,
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "trigger_trap": {
+      "type": "boolean",
+      "target": "game:action/trigger-trap",
+      "safe_default": false
+    },
+    "spawn_boss": {
+      "type": "boolean",
+      "target": "game:action/spawn-boss",
+      "safe_default": false
+    },
+    "open_secret_door": {
+      "type": "boolean",
+      "target": "game:action/secret-door",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "boss_enrage",
+      "condition": "monster_hp < 500 and monster_hp > 0",
+      "cooldown_sec": 0,
+      "severity": "critical",
+      "actions": ["notify_players", "log"]
+    },
+    {
+      "id": "darkness",
+      "condition": "torch_light_pct < 15",
+      "cooldown_sec": 10,
+      "severity": "warning",
+      "actions": ["notify_players", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "underground_level_3",
+    "hardware": "game-engine",
+    "deployment": "game-world"
+  }
+}

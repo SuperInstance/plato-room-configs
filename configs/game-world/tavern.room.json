@@ -1,0 +1,81 @@
+{
+  "room_id": "tavern",
+  "name": "The Rusty Anchor Tavern",
+  "tick_hz": 1.0,
+  "history_capacity": 1000,
+  "sensors": {
+    "patron_count": {
+      "type": "integer",
+      "unit": "patrons",
+      "source": "game:entity-count/tag:patron",
+      "range": [0, 50],
+      "alarm_range": [40, 50]
+    },
+    "ale_barrels": {
+      "type": "integer",
+      "unit": "barrels",
+      "source": "game:inventory/tavern-ale",
+      "range": [0, 100],
+      "alarm_range": [0, 5]
+    },
+    "fire_lit": {
+      "type": "boolean",
+      "unit": null,
+      "source": "game:state/tavern-fire",
+      "range": null,
+      "alarm_range": null
+    },
+    "brawl_active": {
+      "type": "boolean",
+      "unit": null,
+      "source": "game:event/tavern-brawl",
+      "range": null,
+      "alarm_range": null
+    },
+    "reputation": {
+      "type": "float",
+      "unit": "rep",
+      "source": "game:stat/tavern-reputation",
+      "range": [0, 100],
+      "alarm_range": [0, 20]
+    }
+  },
+  "actuators": {
+    "close_doors": {
+      "type": "boolean",
+      "target": "game:action/tavern-close",
+      "safe_default": false
+    },
+    "restock_ale": {
+      "type": "boolean",
+      "target": "game:action/tavern-restock",
+      "safe_default": false
+    },
+    "call_guard": {
+      "type": "boolean",
+      "target": "game:action/summon-guard",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "bar_fight",
+      "condition": "brawl_active == true",
+      "cooldown_sec": 30,
+      "severity": "warning",
+      "actions": ["call_guard", "log", "notify_barkeep"]
+    },
+    {
+      "id": "low_stock",
+      "condition": "ale_barrels < 5",
+      "cooldown_sec": 300,
+      "severity": "info",
+      "actions": ["restock_ale", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "town_square",
+    "hardware": "game-engine",
+    "deployment": "game-world"
+  }
+}

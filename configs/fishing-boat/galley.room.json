@@ -1,0 +1,62 @@
+{
+  "room_id": "galley",
+  "name": "Galley",
+  "tick_hz": 0.1,
+  "history_capacity": 200,
+  "sensors": {
+    "fridge_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "mqtt:esp32/galley/fridge-temp",
+      "range": [-20, 30],
+      "alarm_range": [5, 30]
+    },
+    "stove_on": {
+      "type": "boolean",
+      "unit": null,
+      "source": "gpio:4",
+      "range": null,
+      "alarm_range": null
+    },
+    "co_detector_ppm": {
+      "type": "float",
+      "unit": "ppm",
+      "source": "mqtt:esp32/galley/co",
+      "range": [0, 500],
+      "alarm_range": [50, 500]
+    }
+  },
+  "actuators": {
+    "stove_gas_valve": {
+      "type": "boolean",
+      "target": "gpio:6",
+      "safe_default": false
+    },
+    "galley_vent": {
+      "type": "boolean",
+      "target": "gpio:7",
+      "safe_default": true
+    }
+  },
+  "alarms": [
+    {
+      "id": "fridge_warm",
+      "condition": "fridge_temp_c > 5",
+      "cooldown_sec": 300,
+      "severity": "warning",
+      "actions": ["log", "notify_crew"]
+    },
+    {
+      "id": "carbon_monoxide",
+      "condition": "co_detector_ppm > 50",
+      "cooldown_sec": 5,
+      "severity": "critical",
+      "actions": ["notify_captain", "sound_alarm", "shut_off_gas", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "main_deck_midship",
+    "hardware": "esp32-c3",
+    "deployment": "fishing-boat"
+  }
+}

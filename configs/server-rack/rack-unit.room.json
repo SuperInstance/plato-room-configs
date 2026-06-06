@@ -1,0 +1,69 @@
+{
+  "room_id": "rack_unit",
+  "name": "Rack Unit Monitor",
+  "tick_hz": 1.0,
+  "history_capacity": 2000,
+  "sensors": {
+    "cpu_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "ipmi:sensor/cpu-temp",
+      "range": [0, 105],
+      "alarm_range": [85, 105]
+    },
+    "cpu_usage_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "snmp:hrProcessorLoad.0",
+      "range": [0, 100],
+      "alarm_range": [90, 100]
+    },
+    "ram_usage_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "snmp:hrStorageUsed.1",
+      "range": [0, 100],
+      "alarm_range": [90, 100]
+    },
+    "disk_usage_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "snmp:hrStorageUsed.2",
+      "range": [0, 100],
+      "alarm_range": [85, 100]
+    }
+  },
+  "actuators": {
+    "power_cycle": {
+      "type": "boolean",
+      "target": "ipmi:chassis-power-reset",
+      "safe_default": false
+    },
+    "fan_boost": {
+      "type": "boolean",
+      "target": "ipmi:fan-mode-boost",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "cpu_overheat",
+      "condition": "cpu_temp_c > 85",
+      "cooldown_sec": 30,
+      "severity": "critical",
+      "actions": ["notify_ops", "log", "enable_fan_boost"]
+    },
+    {
+      "id": "disk_full",
+      "condition": "disk_usage_pct > 85",
+      "cooldown_sec": 300,
+      "severity": "warning",
+      "actions": ["notify_ops", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "dc-west-rack-A14",
+    "hardware": "dell-r750",
+    "deployment": "server-rack"
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "room_id": "engine_room",
+  "name": "Engine Room",
+  "tick_hz": 0.2,
+  "history_capacity": 500,
+  "sensors": {
+    "coolant_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "mqtt:esp32/engine/coolant",
+      "range": [0, 120],
+      "alarm_range": [95, 120]
+    },
+    "bilge_cm": {
+      "type": "float",
+      "unit": "cm",
+      "source": "gpio:17",
+      "range": [0, 50],
+      "alarm_range": [10, 50]
+    },
+    "oil_pressure_psi": {
+      "type": "float",
+      "unit": "psi",
+      "source": "mqtt:esp32/engine/oil-pressure",
+      "range": [0, 100],
+      "alarm_range": [0, 15]
+    },
+    "rpm": {
+      "type": "integer",
+      "unit": "rpm",
+      "source": "mqtt:esp32/engine/rpm",
+      "range": [0, 3000],
+      "alarm_range": [2400, 3000]
+    },
+    "exhaust_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "mqtt:esp32/engine/exhaust",
+      "range": [0, 600],
+      "alarm_range": [450, 600]
+    }
+  },
+  "actuators": {
+    "bilge_pump": {
+      "type": "boolean",
+      "target": "gpio:27",
+      "safe_default": false
+    },
+    "engine_throttle": {
+      "type": "float",
+      "target": "pwm:0",
+      "range": [0, 1],
+      "safe_default": 0.5
+    },
+    "fuel_valve": {
+      "type": "boolean",
+      "target": "gpio:22",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "overheat",
+      "condition": "coolant_temp_c > 95",
+      "cooldown_sec": 30,
+      "severity": "critical",
+      "actions": ["notify_captain", "log", "sound_horn"]
+    },
+    {
+      "id": "high_bilge",
+      "condition": "bilge_cm > 10",
+      "cooldown_sec": 60,
+      "severity": "warning",
+      "actions": ["log", "activate_bilge_pump"]
+    },
+    {
+      "id": "low_oil_pressure",
+      "condition": "oil_pressure_psi < 15",
+      "cooldown_sec": 10,
+      "severity": "critical",
+      "actions": ["notify_captain", "log", "reduce_throttle"]
+    },
+    {
+      "id": "overspeed",
+      "condition": "rpm > 2400",
+      "cooldown_sec": 5,
+      "severity": "critical",
+      "actions": ["notify_captain", "log", "reduce_throttle"]
+    }
+  ],
+  "metadata": {
+    "location": "below_deck_aft",
+    "hardware": "esp32-c3",
+    "deployment": "fishing-boat"
+  }
+}

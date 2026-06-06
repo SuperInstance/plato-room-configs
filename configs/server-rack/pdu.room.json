@@ -1,0 +1,74 @@
+{
+  "room_id": "pdu",
+  "name": "Power Distribution Unit",
+  "tick_hz": 1.0,
+  "history_capacity": 3000,
+  "sensors": {
+    "total_load_w": {
+      "type": "float",
+      "unit": "W",
+      "source": "snmp:pduTotalLoad",
+      "range": [0, 10000],
+      "alarm_range": [8500, 10000]
+    },
+    "voltage_v": {
+      "type": "float",
+      "unit": "V",
+      "source": "snmp:pduVoltage",
+      "range": [90, 140],
+      "alarm_range": [100, 110]
+    },
+    "outlet_1_on": {
+      "type": "boolean",
+      "unit": null,
+      "source": "snmp:pduOutletStatus.1",
+      "range": null,
+      "alarm_range": null
+    },
+    "outlet_2_on": {
+      "type": "boolean",
+      "unit": null,
+      "source": "snmp:pduOutletStatus.2",
+      "range": null,
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "outlet_1_switch": {
+      "type": "boolean",
+      "target": "snmp:pduOutletControl.1",
+      "safe_default": true
+    },
+    "outlet_2_switch": {
+      "type": "boolean",
+      "target": "snmp:pduOutletControl.2",
+      "safe_default": true
+    },
+    "main_breaker": {
+      "type": "boolean",
+      "target": "snmp:pduMainBreaker",
+      "safe_default": true
+    }
+  },
+  "alarms": [
+    {
+      "id": "overload",
+      "condition": "total_load_w > 8500",
+      "cooldown_sec": 10,
+      "severity": "critical",
+      "actions": ["notify_ops", "log", "shed_non_critical"]
+    },
+    {
+      "id": "brownout",
+      "condition": "voltage_v < 110",
+      "cooldown_sec": 15,
+      "severity": "critical",
+      "actions": ["notify_ops", "log", "switch_to_ups"]
+    }
+  ],
+  "metadata": {
+    "location": "dc-west-rack-A14-pdu",
+    "hardware": "apc-ap8886",
+    "deployment": "server-rack"
+  }
+}

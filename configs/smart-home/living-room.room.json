@@ -1,0 +1,69 @@
+{
+  "room_id": "living_room",
+  "name": "Living Room",
+  "tick_hz": 0.5,
+  "history_capacity": 500,
+  "sensors": {
+    "temperature_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "zigbee:sensor/living-temp",
+      "range": [0, 50],
+      "alarm_range": [35, 50]
+    },
+    "humidity_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "zigbee:sensor/living-humidity",
+      "range": [0, 100],
+      "alarm_range": [70, 100]
+    },
+    "motion": {
+      "type": "boolean",
+      "unit": null,
+      "source": "zigbee:sensor/living-motion",
+      "range": null,
+      "alarm_range": null
+    },
+    "lux": {
+      "type": "float",
+      "unit": "lx",
+      "source": "zigbee:sensor/living-lux",
+      "range": [0, 100000],
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "main_light": {
+      "type": "boolean",
+      "target": "zigbee:light/living-main",
+      "safe_default": false
+    },
+    "thermostat": {
+      "type": "float",
+      "target": "zigbee:thermostat/living",
+      "range": [15, 30],
+      "safe_default": 22.0
+    },
+    "blinds": {
+      "type": "float",
+      "target": "zigbee:cover/living-blinds",
+      "range": [0, 1],
+      "safe_default": 1.0
+    }
+  },
+  "alarms": [
+    {
+      "id": "high_temp",
+      "condition": "temperature_c > 35",
+      "cooldown_sec": 300,
+      "severity": "warning",
+      "actions": ["notify_homeowner", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "ground_floor_front",
+    "hardware": "zigbee-coordinator",
+    "deployment": "smart-home"
+  }
+}

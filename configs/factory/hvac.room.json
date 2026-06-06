@@ -1,0 +1,90 @@
+{
+  "room_id": "hvac",
+  "name": "HVAC Plant",
+  "tick_hz": 0.5,
+  "history_capacity": 3000,
+  "sensors": {
+    "supply_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "bacnet:analog-input/1",
+      "range": [0, 60],
+      "alarm_range": [50, 60]
+    },
+    "return_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "bacnet:analog-input/2",
+      "range": [0, 60],
+      "alarm_range": null
+    },
+    "supply_pressure_kpa": {
+      "type": "float",
+      "unit": "kPa",
+      "source": "bacnet:analog-input/3",
+      "range": [0, 500],
+      "alarm_range": [400, 500]
+    },
+    "chiller_kw": {
+      "type": "float",
+      "unit": "kW",
+      "source": "bacnet:analog-input/4",
+      "range": [0, 500],
+      "alarm_range": [450, 500]
+    },
+    "filter_dp_pa": {
+      "type": "float",
+      "unit": "Pa",
+      "source": "bacnet:analog-input/5",
+      "range": [0, 1000],
+      "alarm_range": [500, 1000]
+    }
+  },
+  "actuators": {
+    "chiller_enable": {
+      "type": "boolean",
+      "target": "bacnet:binary-output/1",
+      "safe_default": false
+    },
+    "fan_speed": {
+      "type": "float",
+      "target": "bacnet:analog-output/1",
+      "range": [0, 1],
+      "safe_default": 0.5
+    },
+    "damper_position": {
+      "type": "float",
+      "target": "bacnet:analog-output/2",
+      "range": [0, 1],
+      "safe_default": 0.5
+    }
+  },
+  "alarms": [
+    {
+      "id": "high_supply_temp",
+      "condition": "supply_temp_c > 50",
+      "cooldown_sec": 60,
+      "severity": "warning",
+      "actions": ["notify_facilities", "increase_fan_speed", "log"]
+    },
+    {
+      "id": "filter_clogged",
+      "condition": "filter_dp_pa > 500",
+      "cooldown_sec": 86400,
+      "severity": "info",
+      "actions": ["notify_facilities", "log"]
+    },
+    {
+      "id": "chiller_overload",
+      "condition": "chiller_kw > 450",
+      "cooldown_sec": 30,
+      "severity": "critical",
+      "actions": ["notify_facilities", "reduce_load", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "building_A_mechanical_room",
+    "hardware": "bacnet-controller",
+    "deployment": "factory"
+  }
+}

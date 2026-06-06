@@ -1,0 +1,74 @@
+{
+  "room_id": "warehouse",
+  "name": "Warehouse",
+  "tick_hz": 0.5,
+  "history_capacity": 2000,
+  "sensors": {
+    "pallet_count": {
+      "type": "integer",
+      "unit": "pallets",
+      "source": "modbus:register/50001",
+      "range": [0, 5000],
+      "alarm_range": [4500, 5000]
+    },
+    "ambient_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "modbus:register/50002",
+      "range": [-20, 50],
+      "alarm_range": [35, 50]
+    },
+    "humidity_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "modbus:register/50003",
+      "range": [0, 100],
+      "alarm_range": [70, 100]
+    },
+    "dock_door_open": {
+      "type": "boolean",
+      "unit": null,
+      "source": "modbus:coil/10",
+      "range": null,
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "dock_door": {
+      "type": "boolean",
+      "target": "modbus:coil/11",
+      "safe_default": false
+    },
+    "sprinkler_system": {
+      "type": "boolean",
+      "target": "modbus:coil/12",
+      "safe_default": false
+    },
+    "ventilation": {
+      "type": "boolean",
+      "target": "modbus:coil/13",
+      "safe_default": true
+    }
+  },
+  "alarms": [
+    {
+      "id": "near_capacity",
+      "condition": "pallet_count > 4500",
+      "cooldown_sec": 3600,
+      "severity": "warning",
+      "actions": ["notify_supervisor", "log"]
+    },
+    {
+      "id": "high_humidity",
+      "condition": "humidity_pct > 70",
+      "cooldown_sec": 300,
+      "severity": "warning",
+      "actions": ["activate_ventilation", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "building_B",
+    "hardware": "siemens-s7-1200",
+    "deployment": "factory"
+  }
+}

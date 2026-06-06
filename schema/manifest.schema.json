@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://plato.dev/schemas/manifest.schema.json",
+  "title": "Plato Manifest",
+  "description": "Schema for a Plato deployment manifest. A manifest links rooms together and defines agents that operate across them.",
+  "type": "object",
+  "required": ["manifest_id", "name", "rooms", "agents"],
+  "additionalProperties": false,
+  "properties": {
+    "manifest_id": {
+      "type": "string",
+      "description": "Unique identifier for this deployment manifest.",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name for this deployment.",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "rooms": {
+      "type": "array",
+      "description": "List of rooms in this deployment.",
+      "items": {
+        "type": "object",
+        "required": ["room_id", "config"],
+        "additionalProperties": false,
+        "properties": {
+          "room_id": {
+            "type": "string",
+            "description": "Room identifier, matching the room_id in the config file.",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "config": {
+            "type": "string",
+            "description": "Relative path to the .room.json config file from the repo root.",
+            "pattern": ".+\\.room\\.json$"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "agents": {
+      "type": "array",
+      "description": "List of agents that operate across rooms in this deployment.",
+      "items": {
+        "type": "object",
+        "required": ["agent_id", "rooms", "rules"],
+        "additionalProperties": false,
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "description": "Unique identifier for this agent.",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "rooms": {
+            "description": "List of room_ids this agent manages, or [\"*\"] for all rooms.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "rules": {
+            "type": "string",
+            "description": "Natural-language rules governing this agent's behavior.",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

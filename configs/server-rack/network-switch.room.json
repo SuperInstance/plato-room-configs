@@ -1,0 +1,57 @@
+{
+  "room_id": "network_switch",
+  "name": "Network Switch",
+  "tick_hz": 2.0,
+  "history_capacity": 5000,
+  "sensors": {
+    "port_bandwidth_mbps": {
+      "type": "float",
+      "unit": "Mbps",
+      "source": "snmp:ifSpeed.1",
+      "range": [0, 10000],
+      "alarm_range": null
+    },
+    "error_rate_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "snmp:ifErrors.1",
+      "range": [0, 100],
+      "alarm_range": [5, 100]
+    },
+    "switch_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "snmp:entPhySensorValue.1",
+      "range": [0, 85],
+      "alarm_range": [70, 85]
+    }
+  },
+  "actuators": {
+    "port_enable": {
+      "type": "boolean",
+      "target": "snmp:ifAdminStatus.1",
+      "safe_default": true
+    }
+  },
+  "alarms": [
+    {
+      "id": "high_error_rate",
+      "condition": "error_rate_pct > 5",
+      "cooldown_sec": 60,
+      "severity": "warning",
+      "actions": ["notify_ops", "log"]
+    },
+    {
+      "id": "switch_overheat",
+      "condition": "switch_temp_c > 70",
+      "cooldown_sec": 30,
+      "severity": "critical",
+      "actions": ["notify_ops", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "dc-west-rack-A14-top",
+    "hardware": "cisco-cat9300",
+    "deployment": "server-rack"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "manifest_id": "server-rack",
+  "name": "DC West Rack A14",
+  "rooms": [
+    {"room_id": "rack_unit", "config": "configs/server-rack/rack-unit.room.json"},
+    {"room_id": "network_switch", "config": "configs/server-rack/network-switch.room.json"},
+    {"room_id": "pdu", "config": "configs/server-rack/pdu.room.json"}
+  ],
+  "agents": [
+    {"agent_id": "ops_monitor", "rooms": ["*"], "rules": "page on-call for any critical alarm during business hours; escalate to CTO outside hours"}
+  ]
+}

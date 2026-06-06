@@ -1,0 +1,69 @@
+{
+  "room_id": "garage",
+  "name": "Garage",
+  "tick_hz": 0.2,
+  "history_capacity": 300,
+  "sensors": {
+    "garage_door_open": {
+      "type": "boolean",
+      "unit": null,
+      "source": "zigbee:sensor/garage-door",
+      "range": null,
+      "alarm_range": null
+    },
+    "temperature_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "zigbee:sensor/garage-temp",
+      "range": [-30, 60],
+      "alarm_range": null
+    },
+    "co_ppm": {
+      "type": "float",
+      "unit": "ppm",
+      "source": "zigbee:sensor/garage-co",
+      "range": [0, 500],
+      "alarm_range": [50, 500]
+    },
+    "vehicle_present": {
+      "type": "boolean",
+      "unit": null,
+      "source": "zigbee:sensor/garage-car",
+      "range": null,
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "garage_door_motor": {
+      "type": "boolean",
+      "target": "zigbee:switch/garage-door",
+      "safe_default": false
+    },
+    "garage_light": {
+      "type": "boolean",
+      "target": "zigbee:light/garage",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "carbon_monoxide",
+      "condition": "co_ppm > 50",
+      "cooldown_sec": 10,
+      "severity": "critical",
+      "actions": ["notify_homeowner", "open_garage_door", "sound_alarm", "log"]
+    },
+    {
+      "id": "door_open_overnight",
+      "condition": "garage_door_open == true and hour >= 22",
+      "cooldown_sec": 1800,
+      "severity": "warning",
+      "actions": ["notify_homeowner", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "ground_floor_side",
+    "hardware": "zigbee-coordinator",
+    "deployment": "smart-home"
+  }
+}

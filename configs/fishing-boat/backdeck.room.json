@@ -1,0 +1,74 @@
+{
+  "room_id": "backdeck",
+  "name": "Backdeck",
+  "tick_hz": 0.5,
+  "history_capacity": 300,
+  "sensors": {
+    "winch_tension_kg": {
+      "type": "float",
+      "unit": "kg",
+      "source": "mqtt:esp32/backdeck/winch-tension",
+      "range": [0, 5000],
+      "alarm_range": [4000, 5000]
+    },
+    "deck_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "mqtt:esp32/backdeck/temp",
+      "range": [-20, 50],
+      "alarm_range": [-10, -20]
+    },
+    "wind_speed_kts": {
+      "type": "float",
+      "unit": "kts",
+      "source": "mqtt:esp32/backdeck/wind",
+      "range": [0, 100],
+      "alarm_range": [60, 100]
+    },
+    "motion_detect": {
+      "type": "boolean",
+      "unit": null,
+      "source": "gpio:5",
+      "range": null,
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "winch_brake": {
+      "type": "boolean",
+      "target": "gpio:12",
+      "safe_default": true
+    },
+    "deck_light": {
+      "type": "boolean",
+      "target": "gpio:14",
+      "safe_default": false
+    },
+    "hydraulic_valve": {
+      "type": "boolean",
+      "target": "gpio:26",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "winch_overload",
+      "condition": "winch_tension_kg > 4000",
+      "cooldown_sec": 10,
+      "severity": "critical",
+      "actions": ["notify_captain", "engage_winch_brake", "log"]
+    },
+    {
+      "id": "high_wind",
+      "condition": "wind_speed_kts > 60",
+      "cooldown_sec": 60,
+      "severity": "warning",
+      "actions": ["notify_captain", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "stern_deck",
+    "hardware": "esp32-s3",
+    "deployment": "fishing-boat"
+  }
+}

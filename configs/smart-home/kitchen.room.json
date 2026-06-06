@@ -1,0 +1,74 @@
+{
+  "room_id": "kitchen",
+  "name": "Kitchen",
+  "tick_hz": 0.5,
+  "history_capacity": 500,
+  "sensors": {
+    "temperature_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "zigbee:sensor/kitchen-temp",
+      "range": [0, 50],
+      "alarm_range": [40, 50]
+    },
+    "smoke_ppm": {
+      "type": "float",
+      "unit": "ppm",
+      "source": "zigbee:sensor/kitchen-smoke",
+      "range": [0, 1000],
+      "alarm_range": [100, 1000]
+    },
+    "stove_active": {
+      "type": "boolean",
+      "unit": null,
+      "source": "zigbee:sensor/kitchen-stove",
+      "range": null,
+      "alarm_range": null
+    },
+    "fridge_temp_c": {
+      "type": "float",
+      "unit": "°C",
+      "source": "zigbee:sensor/fridge-temp",
+      "range": [-20, 20],
+      "alarm_range": [5, 20]
+    }
+  },
+  "actuators": {
+    "kitchen_light": {
+      "type": "boolean",
+      "target": "zigbee:light/kitchen",
+      "safe_default": false
+    },
+    "stove_gas": {
+      "type": "boolean",
+      "target": "zigbee:switch/stove-gas",
+      "safe_default": false
+    },
+    "exhaust_fan": {
+      "type": "boolean",
+      "target": "zigbee:switch/exhaust",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "smoke_detected",
+      "condition": "smoke_ppm > 100",
+      "cooldown_sec": 5,
+      "severity": "critical",
+      "actions": ["notify_homeowner", "sound_alarm", "shut_off_stove", "log"]
+    },
+    {
+      "id": "fridge_door",
+      "condition": "fridge_temp_c > 5",
+      "cooldown_sec": 600,
+      "severity": "warning",
+      "actions": ["notify_homeowner", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "ground_floor_rear",
+    "hardware": "zigbee-coordinator",
+    "deployment": "smart-home"
+  }
+}

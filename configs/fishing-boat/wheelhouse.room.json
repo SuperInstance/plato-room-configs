@@ -1,0 +1,74 @@
+{
+  "room_id": "wheelhouse",
+  "name": "Wheelhouse",
+  "tick_hz": 1.0,
+  "history_capacity": 1000,
+  "sensors": {
+    "heading_deg": {
+      "type": "float",
+      "unit": "°",
+      "source": "mqtt:esp32/wheelhouse/heading",
+      "range": [0, 360],
+      "alarm_range": null
+    },
+    "speed_kts": {
+      "type": "float",
+      "unit": "kts",
+      "source": "mqtt:esp32/wheelhouse/speed",
+      "range": [0, 20],
+      "alarm_range": null
+    },
+    "depth_m": {
+      "type": "float",
+      "unit": "m",
+      "source": "mqtt:esp32/wheelhouse/depth",
+      "range": [0, 500],
+      "alarm_range": [0, 5]
+    },
+    "gps_lat": {
+      "type": "float",
+      "unit": "°",
+      "source": "mqtt:esp32/wheelhouse/gps-lat",
+      "range": [-90, 90],
+      "alarm_range": null
+    },
+    "gps_lon": {
+      "type": "float",
+      "unit": "°",
+      "source": "mqtt:esp32/wheelhouse/gps-lon",
+      "range": [-180, 180],
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "autopilot": {
+      "type": "boolean",
+      "target": "mqtt:plato/autopilot/engage",
+      "safe_default": false
+    },
+    "nav_lights": {
+      "type": "boolean",
+      "target": "gpio:18",
+      "safe_default": true
+    },
+    "fog_horn": {
+      "type": "boolean",
+      "target": "gpio:23",
+      "safe_default": false
+    }
+  },
+  "alarms": [
+    {
+      "id": "shallow_water",
+      "condition": "depth_m < 5",
+      "cooldown_sec": 15,
+      "severity": "critical",
+      "actions": ["notify_captain", "sound_alarm", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "bridge_deck_forward",
+    "hardware": "rpi4",
+    "deployment": "fishing-boat"
+  }
+}

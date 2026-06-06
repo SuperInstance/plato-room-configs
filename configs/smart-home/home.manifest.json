@@ -1,0 +1,12 @@
+{
+  "manifest_id": "smart-home",
+  "name": "Home",
+  "rooms": [
+    {"room_id": "living_room", "config": "configs/smart-home/living-room.room.json"},
+    {"room_id": "kitchen", "config": "configs/smart-home/kitchen.room.json"},
+    {"room_id": "garage", "config": "configs/smart-home/garage.room.json"}
+  ],
+  "agents": [
+    {"agent_id": "home_automation", "rooms": ["*"], "rules": "auto-manage lights and thermostat based on occupancy; escalate safety alarms immediately"}
+  ]
+}

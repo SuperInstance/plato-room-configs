@@ -1,0 +1,81 @@
+{
+  "room_id": "bilge",
+  "name": "Bilge",
+  "tick_hz": 0.2,
+  "history_capacity": 500,
+  "sensors": {
+    "water_level_aft_cm": {
+      "type": "float",
+      "unit": "cm",
+      "source": "mqtt:esp32/bilge/aft-level",
+      "range": [0, 100],
+      "alarm_range": [40, 100]
+    },
+    "water_level_fwd_cm": {
+      "type": "float",
+      "unit": "cm",
+      "source": "mqtt:esp32/bilge/fwd-level",
+      "range": [0, 100],
+      "alarm_range": [40, 100]
+    },
+    "pump_flow_lpm": {
+      "type": "float",
+      "unit": "L/min",
+      "source": "mqtt:esp32/bilge/flow",
+      "range": [0, 200],
+      "alarm_range": null
+    },
+    "pump_running": {
+      "type": "boolean",
+      "unit": null,
+      "source": "gpio:16",
+      "range": null,
+      "alarm_range": null
+    }
+  },
+  "actuators": {
+    "main_bilge_pump": {
+      "type": "boolean",
+      "target": "gpio:20",
+      "safe_default": false
+    },
+    "emergency_bilge_pump": {
+      "type": "boolean",
+      "target": "gpio:21",
+      "safe_default": false
+    },
+    "sea_cock_valve": {
+      "type": "boolean",
+      "target": "gpio:24",
+      "safe_default": true
+    }
+  },
+  "alarms": [
+    {
+      "id": "high_water_aft",
+      "condition": "water_level_aft_cm > 40",
+      "cooldown_sec": 30,
+      "severity": "critical",
+      "actions": ["notify_captain", "activate_main_pump", "log"]
+    },
+    {
+      "id": "high_water_fwd",
+      "condition": "water_level_fwd_cm > 40",
+      "cooldown_sec": 30,
+      "severity": "critical",
+      "actions": ["notify_captain", "activate_main_pump", "log"]
+    },
+    {
+      "id": "emergency_flood",
+      "condition": "water_level_aft_cm > 70 or water_level_fwd_cm > 70",
+      "cooldown_sec": 10,
+      "severity": "critical",
+      "actions": ["notify_captain", "activate_emergency_pump", "sound_alarm", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "below_deck",
+    "hardware": "esp32-s3",
+    "deployment": "fishing-boat"
+  }
+}

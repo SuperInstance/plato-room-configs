@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://plato.dev/schemas/room.schema.json",
+  "title": "Plato Room Configuration",
+  "description": "Schema for a Plato room configuration file (.room.json). A room defines sensors, actuators, alarms, and metadata for a physical or virtual space.",
+  "type": "object",
+  "required": ["room_id", "name", "tick_hz", "history_capacity", "sensors", "actuators", "alarms", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "Unique identifier for the room. Must be snake_case.",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name for the room.",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "tick_hz": {
+      "type": "number",
+      "description": "Sensor polling frequency in Hz (ticks per second). Must be > 0.",
+      "exclusiveMinimum": 0,
+      "maximum": 100
+    },
+    "history_capacity": {
+      "type": "integer",
+      "description": "Number of historical sensor readings to retain in the ring buffer.",
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "sensors": {
+      "type": "object",
+      "description": "Map of sensor key to sensor configuration.",
+      "additionalProperties": {
+        "$ref": "#/definitions/sensor"
+      },
+      "minProperties": 1
+    },
+    "actuators": {
+      "type": "object",
+      "description": "Map of actuator key to actuator configuration.",
+      "additionalProperties": {
+        "$ref": "#/definitions/actuator"
+      }
+    },
+    "alarms": {
+      "type": "array",
+      "description": "List of alarm rules for this room.",
+      "items": {
+        "$ref": "#/definitions/alarm"
+      }
+    },
+    "metadata": {
+      "$ref": "#/definitions/metadata"
+    }
+  },
+  "definitions": {
+    "sensor": {
+      "type": "object",
+      "required": ["type", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Data type of the sensor reading.",
+          "enum": ["float", "integer", "boolean", "string"]
+        },
+        "unit": {
+          "description": "Unit of measurement. null for dimensionless readings.",
+          "oneOf": [{"type": "string"}, {"type": "null"}]
+        },
+        "source": {
+          "type": "string",
+          "description": "Data source in format 'protocol:path'. Supported protocols: mqtt, gpio, pwm, adc, i2c, spi, modbus, bacnet, snmp, ipmi, zigbee, game.",
+          "pattern": "^[a-z][a-z0-9]*:.+"
+        },
+        "range": {
+          "description": "Valid operating range [min, max]. null for unbounded.",
+          "oneOf": [
+            {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+            {"type": "null"}
+          ]
+        },
+        "alarm_range": {
+          "description": "Range that triggers concern [min, max]. null if no alarm threshold.",
+          "oneOf": [
+            {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "actuator": {
+      "type": "object",
+      "required": ["type", "target", "safe_default"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Data type of the actuator control.",
+          "enum": ["boolean", "float", "integer"]
+        },
+        "target": {
+          "type": "string",
+          "description": "Control target in format 'protocol:path'.",
+          "pattern": "^[a-z][a-z0-9]*:.+"
+        },
+        "range": {
+          "description": "Valid control range [min, max] for numeric actuators.",
+          "oneOf": [
+            {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+            {"type": "null"}
+          ]
+        },
+        "safe_default": {
+          "description": "Safe default value when control is lost. Must match the actuator type.",
+          "oneOf": [{"type": "boolean"}, {"type": "number"}, {"type": "integer"}]
+        }
+      }
+    },
+    "alarm": {
+      "type": "object",
+      "required": ["id", "condition", "cooldown_sec", "severity", "actions"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique alarm identifier within this room.",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Boolean expression for alarm trigger. References sensor keys by name. Supports: >, <, >=, <=, ==, !=, and, or.",
+          "minLength": 1
+        },
+        "cooldown_sec": {
+          "type": "integer",
+          "description": "Minimum seconds between repeated triggers of this alarm.",
+          "minimum": 0
+        },
+        "severity": {
+          "type": "string",
+          "description": "Alarm severity level.",
+          "enum": ["info", "warning", "critical"]
+        },
+        "actions": {
+          "type": "array",
+          "description": "List of actions to take when the alarm triggers.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["location", "deployment"],
+      "additionalProperties": true,
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "Physical or logical location of the room."
+        },
+        "hardware": {
+          "type": "string",
+          "description": "Hardware platform running the room controller."
+        },
+        "deployment": {
+          "type": "string",
+          "description": "Deployment scenario this room belongs to."
+        }
+      }
+    }
+  }
+}

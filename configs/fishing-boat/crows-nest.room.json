@@ -1,0 +1,43 @@
+{
+  "room_id": "crows_nest",
+  "name": "Crow's Nest",
+  "tick_hz": 0.1,
+  "history_capacity": 200,
+  "sensors": {
+    "visibility_km": {
+      "type": "float",
+      "unit": "km",
+      "source": "mqtt:esp32/crowsnest/visibility",
+      "range": [0, 50],
+      "alarm_range": [0, 0.5]
+    },
+    "rigging_tension_pct": {
+      "type": "float",
+      "unit": "%",
+      "source": "mqtt:esp32/crowsnest/tension",
+      "range": [0, 100],
+      "alarm_range": [85, 100]
+    }
+  },
+  "actuators": {
+    "beacon_light": {
+      "type": "boolean",
+      "target": "gpio:15",
+      "safe_default": true
+    }
+  },
+  "alarms": [
+    {
+      "id": "low_visibility",
+      "condition": "visibility_km < 0.5",
+      "cooldown_sec": 120,
+      "severity": "warning",
+      "actions": ["notify_captain", "activate_fog_horn", "log"]
+    }
+  ],
+  "metadata": {
+    "location": "mast_top",
+    "hardware": "esp32-c3",
+    "deployment": "fishing-boat"
+  }
+}

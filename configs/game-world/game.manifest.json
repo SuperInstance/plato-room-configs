@@ -1,0 +1,12 @@
+{
+  "manifest_id": "game-world",
+  "name": "Realm of Eldoria",
+  "rooms": [
+    {"room_id": "tavern", "config": "configs/game-world/tavern.room.json"},
+    {"room_id": "dungeon", "config": "configs/game-world/dungeon.room.json"},
+    {"room_id": "forest", "config": "configs/game-world/forest.room.json"}
+  ],
+  "agents": [
+    {"agent_id": "dungeon_master", "rooms": ["*"], "rules": "orchestrate events based on player actions; scale difficulty dynamically"}
+  ]
+}
