@@ -115,9 +115,8 @@
           ]
         },
         "safe_default": {
-          "description": "Safe default value when control is lost. Must match the actuator type.",
-          "oneOf": [{"type": "boolean"}, {"type": "number"}, {"type": "integer"}]
-        }
+          "description": "Safe default value when control is lost. Must match the actuator type."
+        },
       }
     },
     "alarm": {

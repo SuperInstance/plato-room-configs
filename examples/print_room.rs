@@ -6,7 +6,8 @@ use plato_room_configs::loader::RoomLoader;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let path = args.get(1).unwrap_or(&"configs/fishing-boat/engine-room.room.json".to_string());
+    let default_path = "configs/fishing-boat/engine-room.room.json".to_string();
+    let path = args.get(1).unwrap_or(&default_path);
 
     let loader = RoomLoader::new(".");
     let room = loader.load_room(path).unwrap_or_else(|e| {

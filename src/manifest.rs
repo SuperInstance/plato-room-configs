@@ -160,7 +160,7 @@ impl ManifestLoader {
 }
 
 /// Returns which agents are active for a given room_id based on the manifest's agent definitions.
-pub fn agents_for_room(manifest: &Manifest, room_id: &str) -> Vec<&ManifestAgent> {
+pub fn agents_for_room<'a>(manifest: &'a Manifest, room_id: &str) -> Vec<&'a ManifestAgent> {
     manifest
         .agents
         .iter()
