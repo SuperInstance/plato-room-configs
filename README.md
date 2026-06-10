@@ -368,7 +368,7 @@ configs/
 
 ## Integration with PlatoEngine
 
-The `plato-room-configs` crate is designed to work seamlessly with the `plato-engine-block` Rust crate:
+The `plato-room-configs` crate is designed to work with the `plato-engine-block` Rust crate:
 
 ```rust
 use plato_engine_block::PlatoEngine;
